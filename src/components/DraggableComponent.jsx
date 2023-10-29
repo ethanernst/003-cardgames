@@ -1,7 +1,7 @@
 import React, { Component, createRef } from 'react';
 import styled from 'styled-components';
 
-const CardStyle = styled.div.attrs(({ x, y, z, width, height, size }) => ({
+const DraggableStyle = styled.div.attrs(({ x, y, z, width, height, size }) => ({
   style: {
     // attributes that will update frequently passed in here
     transform: `translate(${x}px, ${y}px)`,
@@ -20,67 +20,28 @@ const CardStyle = styled.div.attrs(({ x, y, z, width, height, size }) => ({
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-
-  img {
-    scale: ${({ size }) => size};
-    // scaling with pixelated rendering causes weird image distortion
-    /* image-rendering: optimizeSpeed;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: -o-crisp-edges;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: optimize-contrast;
-    -ms-interpolation-mode: nearest-neighbor;
-    image-rendering: pixelated; */
-  }
 `;
 
-class Card extends Component {
+class DraggableComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: props.id,
-      suit: props.id.slice(0, 1),
-      number: props.id.slice(1),
-
-      width: 88,
-      height: 124,
-      image: null,
       scale: props.scale || 1,
-      zLevel: 0,
+      zLevel: props.zLevel || 0,
 
       isDragging: false,
       currentX: props.initialX || 0,
       currentY: props.initialY || 0,
+      width: props.width,
+      height: props.height,
     };
 
-    this.cardRef = createRef();
-  }
-
-  componentDidMount() {
-    this.loadImage();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.id !== this.props.id) {
-      this.loadImage();
-    }
-  }
-
-  loadImage() {
-    const { id } = this.state;
-
-    import(`../assets/Cards/${id}.png`)
-      .then(module => {
-        this.setState({ image: module.default });
-      })
-      .catch(error => {
-        console.error(`Error loading image: ${error}`);
-      });
+    this.divRef = createRef();
   }
 
   handleMouseDown = e => {
     e.preventDefault();
-    const cardRect = this.cardRef.current.getBoundingClientRect();
+    const cardRect = this.divRef.current.getBoundingClientRect();
 
     this.setState({
       isDragging: true,
@@ -116,8 +77,8 @@ class Card extends Component {
 
   render() {
     return (
-      <CardStyle
-        ref={this.cardRef}
+      <DraggableStyle
+        ref={this.divRef}
         width={this.state.width}
         height={this.state.height}
         size={this.state.scale}
@@ -126,10 +87,10 @@ class Card extends Component {
         z={this.state.zLevel}
         onMouseDown={this.handleMouseDown}
       >
-        <img src={this.state.image} />
-      </CardStyle>
+        {this.props.children}
+      </DraggableStyle>
     );
   }
 }
 
-export default Card;
+export default DraggableComponent;

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 
 import Card from './Card';
+import CardStack from './CardStack';
 
 const BoardStyle = styled.div`
   width: 100vw;
@@ -15,21 +16,9 @@ class Board extends Component {
   }
 
   generateDeck() {
-    const ranks = [
-      '02',
-      '03',
-      '04',
-      '05',
-      '06',
-      '07',
-      '08',
-      '09',
-      '10',
-      '11',
-      '12',
-      '13',
-      '14',
-    ]; // Card ranks (2-10, Jack, Queen, King, Ace)
+    // prettier-ignore
+    // Card ranks (2-10, Jack, Queen, King, Ace)
+    const ranks = ['02','03','04','05','06','07','08','09','10','11','12','13','14',];
     const suits = ['C', 'D', 'H', 'S']; // Card suits (Clubs, Diamonds, Hearts, Spades)
 
     const deck = [];
@@ -47,31 +36,38 @@ class Board extends Component {
     const renderedJsx = [];
 
     const xSpacing = 120;
-    const ySpacing = 150;
-    for (let i = 0; i < 4; i++) {
-      const counter = i * 13;
-      for (let j = 0; j < 13; j++) {
+    const ySpacing = 200;
+    const scale = 1;
+    const rows = 4;
+    const columns = 13;
+
+    for (let row = 0; row < rows; row++) {
+      const counter = row * columns;
+      for (let column = 0; column < columns; column++) {
         renderedJsx.push(
           <Card
-            key={cards[j + counter]}
-            id={cards[j + counter]}
-            initialX={j * xSpacing}
-            initialY={i * ySpacing}
+            key={cards[column + counter]}
+            id={cards[column + counter]}
+            initialX={column * xSpacing}
+            initialY={row * ySpacing}
+            scale={scale}
           />
         );
       }
     }
-
-    console.log(renderedJsx);
 
     return renderedJsx;
   }
 
   render() {
     const cardDeck = this.generateDeck();
-    console.log(cardDeck);
 
-    return <BoardStyle>{this.renderCards(cardDeck)}</BoardStyle>;
+    return (
+      <BoardStyle>
+        {this.renderCards(cardDeck)}
+        <CardStack type={'deck'} initialX={200} initialY={800}></CardStack>
+      </BoardStyle>
+    );
   }
 }
 
